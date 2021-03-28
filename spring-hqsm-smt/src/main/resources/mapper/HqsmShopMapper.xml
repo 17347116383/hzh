@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.itdy.hqsm.modes.mapper.HqsmShopMapper">
+  <resultMap id="BaseResultMap" type="com.itdy.hqsm.modes.entity.HqsmShop">
+    <id column="shop_id" jdbcType="BIGINT" property="shopId" />
+    <result column="user_id" jdbcType="BIGINT" property="userId" />
+    <result column="shop_name" jdbcType="VARCHAR" property="shopName" />
+    <result column="shop_status" jdbcType="VARCHAR" property="shopStatus" />
+    <result column="shop_address" jdbcType="VARCHAR" property="shopAddress" />
+    <result column="create_date" jdbcType="DATE" property="createDate" />
+    <result column="update_date" jdbcType="DATE" property="updateDate" />
+    <result column="preview" jdbcType="VARCHAR" property="preview" />
+    <result column="page_status" jdbcType="VARCHAR" property="pageStatus" />
+  </resultMap>
+
+
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from hqsm_shop
+    where shop_id = #{shopId,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.itdy.hqsm.modes.entity.HqsmShop">
+    insert into hqsm_shop (shop_id, user_id, shop_name,
+      shop_status, shop_address, create_date, 
+      update_date, preview, page_status
+      )
+    values (#{shopId,jdbcType=BIGINT}, #{userId,jdbcType=BIGINT}, #{shopName,jdbcType=VARCHAR},
+      #{shopStatus,jdbcType=VARCHAR}, #{shopAddress,jdbcType=VARCHAR}, #{createDate,jdbcType=DATE}, 
+      #{updateDate,jdbcType=DATE}, #{preview,jdbcType=VARCHAR}, #{pageStatus,jdbcType=VARCHAR}
+      )
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.itdy.hqsm.modes.entity.HqsmShop">
+    update hqsm_shop
+    set user_id = #{userId,jdbcType=BIGINT},
+      shop_name = #{shopName,jdbcType=VARCHAR},
+      shop_status = #{shopStatus,jdbcType=VARCHAR},
+      shop_address = #{shopAddress,jdbcType=VARCHAR},
+      create_date = #{createDate,jdbcType=DATE},
+      update_date = #{updateDate,jdbcType=DATE},
+      preview = #{preview,jdbcType=VARCHAR},
+      page_status = #{pageStatus,jdbcType=VARCHAR}
+    where shop_id = #{shopId,jdbcType=BIGINT}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select shop_id, user_id, shop_name, shop_status, shop_address, create_date, update_date,
+    preview, page_status
+    from hqsm_shop
+    where shop_id = #{shopId,jdbcType=BIGINT}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select shop_id, user_id, shop_name, shop_status, shop_address, create_date, update_date, 
+    preview, page_status
+    from hqsm_shop
+  </select>
+</mapper>

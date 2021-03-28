@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.itdy.hqsm.security.myshiro.mapper.CollectionsMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap  type="com.itdy.hqsm.security.myshiro.entity.Collections" id="collectionList">
+        <id column="cid" property="cid" />
+        <result column="cname" property="cname" />
+        <result column="url" property="url" />
+        <result column="user_id" property="userId" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        cid, cname, url, user_id
+    </sql>
+
+    <!--<insert id="saveCollection"  parameterType="com.youhe.entity.collection.Collections" -->
+            <!--useGeneratedKeys="true">-->
+           <!--insert into sys_collections (url) value (#{url})-->
+    <!--</insert>-->
+
+    <select id="findCollections" parameterType="com.itdy.hqsm.security.myshiro.entity.Collections" resultMap="collectionList">
+        SELECT * from sys_collection where user_id=#{uids};
+    </select>
+
+    <select id="finds" parameterType="String"  resultType="java.lang.Integer">
+        select count(1) from sys_collection
+         where url =#{url} and user_id=#{uids};
+    </select>
+
+
+    <delete id="del" parameterType="String">
+       DELETE from sys_collection where
+	   url =#{url};
+    </delete>
+
+    <insert id="insertCollections" parameterType="com.itdy.hqsm.security.myshiro.entity.Collections">
+
+         insert into sys_collection(
+        cid, cname, url, user_id
+        )
+        values(
+        #{cid,jdbcType=BIGINT},
+        #{cname,jdbcType=VARCHAR},
+        #{url,jdbcType=VARCHAR},
+        #{userId,jdbcType=VARCHAR}
+        )
+    </insert>
+
+</mapper>

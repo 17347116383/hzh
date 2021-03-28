@@ -1,0 +1,322 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.itdy.hqsm.security.myshiro.mapper.UserMapper" >
+
+
+
+
+    <resultMap type="com.itdy.hqsm.security.myshiro.entity.User" id="userMap">
+        <id property="uid" column="UID"/>
+        <result property="userAccount" column="USER_ACCOUNT"/>
+        <result property="userName" column="USER_NAME"/>
+        <result property="phone" column="PHONE"/>
+        <result property="email" column="EMAIL"/>
+        <result property="locked" column="LOCKED"/>
+        <result property="userPassword" column="USER_PASSWORD"/>
+        <result property="registerDate" column="REGISTER_DATE"/>
+
+        <result property="salt" column="SALT"/>
+        <result property="roleId" column="ROLE_ID"/>
+        <result property="departmentId" column="DEPARTMENT_ID"/>
+
+        <collection property="roles" ofType="com.itdy.hqsm.security.myshiro.entity.Role">
+            <id property="rid" column="RID"/>
+            <result property="rname" column="NAME"/>
+            <collection property="permissions" ofType="com.itdy.hqsm.security.myshiro.entity.Permission">
+                <id property="pid" column="PID"/>
+                <result property="pname" column="PNAME"/>
+                <result property="percode" column="PERCODE"></result>
+            </collection>
+        </collection>
+    </resultMap>
+
+
+    <resultMap type="com.itdy.hqsm.security.myshiro.entity.User" id="userList">
+        <id property="uid" column="UID"/>
+        <result property="userAccount" column="USER_ACCOUNT"/>
+        <result property="userName" column="USER_NAME"/>
+        <result property="phone" column="PHONE"/>
+        <result property="email" column="EMAIL"/>
+        <result property="locked" column="LOCKED"/>
+        <result property="registerDate" column="REGISTER_DATE"/>
+        <result property="userPassword" column="USER_PASSWORD"/>
+        <result property="roleId" column="ROLE_ID"></result>
+        <result property="departmentId" column="DEPARTMENT_ID"></result>
+        <result property="roleName" column="ROLE_NAME"></result>
+        <result property="departmentName" column="DEPARTMENT_NAME"></result>
+    </resultMap>
+
+
+    <update id="update" parameterType="com.itdy.hqsm.security.myshiro.entity.User">
+        UPDATE sys_user u
+        <set>
+            <if test="userName != null and userName != ''">
+                u.USER_NAME = #{userName,jdbcType=VARCHAR},
+            </if>
+            <if test="userPassword != null and userPassword != ''">
+                u.USER_PASSWORD = #{userPassword,jdbcType=VARCHAR},
+            </if>
+            <if test="salt != null and salt != ''">
+                u.SALT = #{salt,jdbcType=VARCHAR},
+            </if>
+            <if test="phone != null and phone != ''">
+                u.phone = #{phone,jdbcType=VARCHAR},
+            </if>
+            <if test="email != null and email != ''">
+                u.EMAIL = #{email,jdbcType=VARCHAR},
+            </if>
+            <if test="locked != null ">
+                u.LOCKED = #{locked,jdbcType=INTEGER},
+            </if>
+            <if test="roleId != null and roleId != ''">
+                u.ROLE_ID = #{roleId,jdbcType=VARCHAR},
+            </if>
+            <if test="departmentId != null and departmentId != ''">
+                u.DEPARTMENT_ID = #{departmentId,jdbcType=VARCHAR},
+            </if>
+        </set>
+        <where>
+            <trim prefixOverrides="AND">
+                <if test="userAccount!=null and userAccount !=''">
+                    AND USER_ACCOUNT=#{userAccount}
+                </if>
+                <if test="uid!=null">
+                    AND UID=#{uid}
+                </if>
+            </trim>
+        </where>
+    </update>
+
+
+    <select id="findByUserName" parameterType="string" resultMap="userMap">
+        SELECT u.*,r.*,p.* FROM sys_user u
+        inner join sys_user_role ur on ur.sys_user_id=u.uid
+        inner join sys_role r on r.rid=ur.sys_role_id
+        inner join sys_role_permission mr on mr.sys_role_id=r.rid
+        inner join sys_permission p on mr.sys_permission_id=p.pid
+        WHERE USER_ACCOUNT=#{userAccount};
+    </select>
+
+    <select id="getSalt" parameterType="string" resultMap="userMap" >
+        SELECT *  FROM sys_user u
+        WHERE u.USER_ACCOUNT=#{userAccount};
+    </select>
+
+    <!-- 查询用户所有权限，包括角色和部门-->
+    <select id="findUserList" parameterType="string" resultMap="userMap">
+        SELECT u.*,r.*,p.* FROM sys_user u
+        inner join sys_user_role ur on ur.sys_user_id=u.uid
+        inner join sys_role r on r.rid=ur.sys_role_id
+
+        <!--
+                inner join sys_user_department ud on ud.sys_user_id=u.uid
+                inner join sys_department d on d.DEPT_ID=ud.sys_department_id
+          -->
+        inner join sys_role_permission mr on mr.sys_role_id=r.rid
+        inner join sys_permission p on mr.sys_permission_id=p.pid
+        WHERE
+
+        USER_ACCOUNT=#{userAccount}
+
+    </select>
+
+    <!--单独查询用户表-->
+    <select id="findOnlyUserList" parameterType="com.itdy.hqsm.security.myshiro.entity.User" resultMap="userList">
+        SELECT DISTINCT u.* , r.RNAME ROLE_NAME ,d.NAME DEPARTMENT_NAME FROM sys_user u
+        LEFT JOIN sys_role r on r.rid=u.ROLE_ID
+        LEFT JOIN sys_department d on d.DEPT_ID=u.DEPARTMENT_ID
+        WHERE
+        1 =1
+        <if test="userAccount!=null and userAccount !=''">
+            AND USER_ACCOUNT=#{userAccount}
+        </if>
+        <if test="uid!=null and uid !=''">
+            AND UID=#{uid}
+        </if>
+    </select>
+
+
+    <insert id="save" parameterType="com.itdy.hqsm.security.myshiro.entity.User" keyProperty="uid"
+            useGeneratedKeys="true">
+        insert into sys_user(
+        USER_ACCOUNT,
+        USER_NAME,
+        USER_PASSWORD,
+        SALT,
+        LOCKED,
+        REGISTER_DATE,
+        PHONE,
+        EMAIL,
+        ROLE_ID,
+        DEPARTMENT_ID,
+        ORDER_NUM
+        )
+        values(
+        #{userAccount,jdbcType=VARCHAR},
+        #{userName,jdbcType=VARCHAR},
+        #{userPassword,jdbcType=VARCHAR},
+        #{salt,jdbcType=VARCHAR},
+        0,
+        NOW(),
+        #{phone,jdbcType=VARCHAR},
+        #{email,jdbcType=VARCHAR},
+        #{roleId,jdbcType=VARCHAR},
+        #{departmentId,jdbcType=VARCHAR},
+        #{orderNum,jdbcType=VARCHAR}
+        )
+    </insert>
+
+    <delete id="del" parameterType="com.itdy.hqsm.security.myshiro.entity.User">
+        DELETE from  sys_user where UID = #{uid}
+    </delete>
+
+    <select id="findName" resultType="com.itdy.hqsm.security.myshiro.entity.User">
+
+          SELECT
+          USER_NAME AS 'userName',
+          DEPARTMENT_ID AS 'departmentId'
+          FROM sys_user u
+          WHERE u.uid=#{userId}
+
+    </select>
+
+    <!--ztree树形查询出最高级部门下的用户-->
+    <!--查一级部门-->
+    <resultMap type="com.itdy.hqsm.security.myshiro.entity.Department" id="findDeptAndUserList" autoMapping="true">
+        <id property="deptId"   column="dept_id" />
+        <result property="userDepartmentName" column="name" />
+        <collection property="dept" javaType="java.util.List"
+                    column="dept_id" ofType="com.youhe.entity.department.Department" select="findNameOne" />
+    </resultMap>
+    <!--查二级部门-->
+    <resultMap type="com.itdy.hqsm.security.myshiro.entity.Department" id="findDeptAndUserList1" autoMapping="true">
+        <id property="uid" column="uid" />
+        <result property="deptId"   column="dept_id" />
+        <result property="parentId" column="parent_id" />
+        <result property="userDepartmentName" column="name" />
+        <collection property="user" javaType="java.util.List"
+                    column="dept_id" ofType="com.youhe.entity.user.User" select="findNameTwo" />
+    </resultMap>
+    <!--查询用户-->
+    <resultMap type="com.itdy.hqsm.security.myshiro.entity.User" id="userResultMap" autoMapping="true">
+        <id column="uid" property="uid"/>
+        <result column="department_id" property="departmentId"/>
+        <result column="user_name" property="userDepartmentName"/>
+    </resultMap>
+
+
+
+    <select id="findNames"  resultMap="findDeptAndUserList">
+       select dept_id ,name from sys_department where parent_id='0'
+    </select>
+
+    <select id="findNameOne"  resultMap="findDeptAndUserList1">
+       select dept_id  ,name,parent_id from sys_department where parent_id=#{dept_id}
+       union all
+       select u.uid as 'uid',u.user_name as 'userDepartmentName',d.parent_id as 'parentId' from sys_user u inner join sys_department d
+       on u.department_id=d.dept_id
+       where u.department_id=#{dept_id}
+    </select>
+
+    <select id="findNameTwo"  resultType="com.itdy.hqsm.security.myshiro.entity.User" parameterType="java.lang.String" >
+       select user_name as 'userDepartmentName' ,uid as 'uid',department_id as 'departmentId'
+       from sys_user where department_id=#{dept_id}
+</select>
+
+
+
+    <select id="findUser" parameterType="com.itdy.hqsm.security.myshiro.entity.User" resultMap="userMap">
+        SELECT * from sys_user
+        where 1=1
+        <if test="userAccount!=null and userAccount!=''">
+            AND USER_ACCOUNT = #{userAccount}
+        </if>
+    </select>
+
+    <update id="updates" parameterType="com.itdy.hqsm.security.myshiro.entity.User">
+        UPDATE  sys_user
+        SET
+        <if test="userName != null and userName!=''">
+            USER_NAME=#{userName},
+        </if>
+        <if test="email != null and email!=''">
+            EMAIL=#{email},
+        </if>
+        <if test="phone != null and phone!=''">
+            PHONE=#{phone}
+        </if>
+
+        WHERE uid=#{uid}
+    </update>
+
+    <!--根据部门id查询部门名称-->
+    <select id="queryDeptName" parameterType="java.lang.String" resultType="com.itdy.hqsm.security.myshiro.entity.Department">
+
+       select NAME from sys_department where DEPT_ID=#{deptId}
+
+    </select>
+
+
+
+
+
+
+
+
+
+
+
+  <!--  <select id="selectByPrimaryKey" resultType="com.itdy.hqsm.modes.entity.User" parameterType="java.lang.Integer" >
+        select * from user where id = #{id}
+    </select>
+-->
+
+
+   <!-- <select id="getUser" resultType="com.itdy.hqsm.modes.entity.User">
+     select  * from  user
+  </select>-->
+
+<!--
+  <select id="findByPage" resultType="com.itdy.hqsm.modes.entity.User">
+  select  * from  user
+  </select>-->
+
+    <!--<insert id="insert" parameterType="java.util.List" useGeneratedKeys="false">
+        insert into user (
+        ID,
+        name,
+        age,
+        createDate
+        ) VALUES
+        <foreach collection="list" item="item" index="index" separator=",">
+            (
+            #{item.id},
+            #{item.name},
+            #{item.age},
+            #{item.createDate}
+            )
+        </foreach>
+    </insert>-->
+
+
+
+
+
+  <!--  <insert id="insertSett" parameterType="java.util.Set" useGeneratedKeys="false">
+        insert into user (
+        id,
+        name,
+        age,
+        createDate
+        ) VALUES
+        <foreach collection="collection" item="item" index="index" separator=",">
+            (
+            #{item.id},
+            #{item.name},
+            #{item.age},
+            #{item.createDate}
+                )
+            </foreach>
+        </insert>-->
+
+    </mapper>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.itdy.hqsm.security.myshiro.mapper.DesktopSetMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="find_desktop_list" type="com.itdy.hqsm.security.myshiro.entity.DesktopSet">
+        <id column="id" property="id" />
+        <result column="user_id" property="userId" />
+        <result column="sys_div_id" property="sysDivId" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+         id, user_id, sys_div_id
+    </sql>
+
+
+
+  <!--  <select id="find_desktop_list" parameterType="com.itdy.hqsm.security.myshiro.entity.DesktopSet" resultMap="find_desktop_list">
+      SELECT * from sys_desktop_set where user_id = #{userId}
+    </select>
+
+
+    &lt;!&ndash; 查询div&ndash;&gt;
+    <select id="findDesktop" parameterType="com.itdy.hqsm.security.myshiro.entity.DesktopSet" resultMap="find_desktop_list">
+        SELECT * from sys_desktop_set where user_id=#{userId}
+    </select>
+
+
+    <delete id="delPer" parameterType="com.itdy.hqsm.security.myshiro.entity.DesktopSet">
+             DELETE  from sys_desktop_set where user_id = #{userId}
+    </delete>
+
+    <insert id="save" parameterType="com.itdy.hqsm.security.myshiro.entity.DesktopSet">
+        insert into sys_desktop_set(
+        user_id,
+        sys_div_id
+        )
+        values(
+        #{userId},
+        #{sysDivId}
+        )
+    </insert>-->
+</mapper>
