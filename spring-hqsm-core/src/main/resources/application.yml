@@ -1,0 +1,221 @@
+
+server:
+  port: 8081
+
+#默认使用配置
+spring:
+
+  datasource:
+    #driver-class-name: com.mysql.jdbc.Driver
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/shiro?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&serverTimezone=GMT%2B8
+    username: root
+    password: root
+    #driver-class-name: com.mysql.cj.jdbc.Driver
+    type: com.alibaba.druid.pool.DruidDataSource
+    filters: stat,wall,log4j
+    initialSize: 5
+    minIdle: 5
+    maxActive: 100
+    maxWait: 60000
+    timeBetweenEvictionRunsMillis: 60000
+    minEvictableIdleTimeMillis: 300000
+    validationQuery: SELECT 1 FROM DUAL
+    testWhileIdle: true
+    testOnBorrow: false
+    testOnReturn: false
+    poolPreparedStatements: false
+    maxPoolPreparedStatementPerConnectionSize: 20
+      # connectionProperties:
+      #   druid:
+      #     stat:
+    #       mergeSql: true
+    #       slowSqlMillis: 5000
+
+#开启AOP
+  aop:
+    proxy-target-class: true
+
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+
+mybatis:
+  typeAliasesPackage: com.xdd.entity
+  mapperLocations: classpath:mapper/*.xml
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+      # logging:
+      #   level:
+      #   com.itdy.hqsm.security.hqsm.mapper: debug
+
+
+redis:
+  # Redis服务器地址
+  host: 127.0.0.1
+  # Redis服务器连接端口
+  port: 6379
+  # Redis服务器连接密码（默认为空）
+  password:
+  # 连接池最大连接数（使用负值表示没有限制）
+  pool:
+    max-active: 1000
+    # 连接池最大阻塞等待时间（使用负值表示没有限制）
+    max-wait: -1
+    # 连接池中的最大空闲连接
+    max-idle: 10
+    # 连接池中的最小空闲连接
+    min-idle: 0
+    # 连接超时时间（毫秒）
+    timeout: 3000
+
+
+
+
+
+
+
+
+  pagehelper:
+    #分页插件方言选择
+    helperDialect: mysql
+    #合理化参数，设为true时pageNum<=0 时会查第一页， pageNum>pages（超过总数时），会查询最后一页
+    reasonable: true
+    supportMethodsArguments: true
+    #配置分页插件pagehelper
+    params: count=countSql
+
+
+
+    servlet:
+      multipart:
+        max-file-size: 5Mb
+        max-request-size: 10Mb
+
+
+  # thymeleaf 模块配置
+  thymeleaf:
+    prefix: classpath:/templates/
+    suffix: .html
+    mode: LEGACYHTML5
+    encoding: utf-8
+    cache: false
+    servlet:
+      content-type: text/html
+
+  application:
+    name: spirng-boot-mongodb
+  data:
+    mongodb:
+      host: localhost   #同127.0.0.1
+      port: 27017
+      database: test    #指定操作的数据库
+
+
+
+
+            # SpringBoot2.x 整合thymeleaf
+            #开发时关闭缓存,不然没法看到实时页面
+            #spring.thymeleaf.cache=false
+            #spring.thymeleaf.mode=HTML5
+            #前缀
+            # 是否检查模板位置是否存在。
+           #check-template: true
+            # 是否为Web框架启用Thymeleaf视图分辨率。
+            #enabled: true
+            #spring.thymeleaf.prefix=classpath:/templates/
+            #编码
+            #spring.thymeleaf.encoding=UTF-8
+            #类型
+            #spring.thymeleaf.content-type=text/html
+            #名称的后缀
+            #spring.thymeleaf.suffix=.html
+
+
+#rabbitmq配置
+
+    # rabbitmq:
+    #连接地址
+    #    host: 127.0.0.1
+    #host: 192.168.174.129
+    #端口号
+    #    port: 5672
+    #账号
+    #    username: root
+    #密码
+    #    password: root
+    # 地址  主机独立的virtualhost
+    #   virtual-host: /
+    # 开启发送确认
+    #    publisher-confirms: true
+    # 开启发送失败退回
+      #   publisher-returns: true
+  #  listener:
+      #    direct:
+      #     retry:
+      #        enabled: true #消费者端的重试
+      #    simple:
+      #      retry:
+      #       enabled: true #消费者端的重试
+      #     auto-startup: true  #启动时自动启动容器  true
+    #     default-requeue-rejected: true  #投递失败时是否重新排队
+      # template:
+      #    reply-timeout: 10000 #超时时间
+      #    retry:
+      #      enabled: true  #设置为true的时候RabbitTemplate(生产端)能够实现重试
+      #     initial-interval: 1000  #第一次与第二次发布消息的时间间隔 1000
+      #     max-attempts: 3 #尝试发布消息的最大数量 3
+      #     max-interval: 10000  #尝试发布消息的最大时间间隔 10000
+  #      multiplier: 1.0  #上一次尝试时间间隔的乘数 1.0
+
+
+# Elasticsearch
+# 9200端口是用来让HTTP REST API来访问ElasticSearch，而9300端口是传输层监听的默认端口
+#注意cluster.name需要与config/elasticsearch.yml中的cluster.name一致
+# Elasticsearch
+# 9200端口是用来让HTTP REST API来访问ElasticSearch，而9300端口是传输层监听的默认端口
+#节点地址，多个节点用逗号隔开spring.data.elasticsearch.cluster-nodes=127.0.0.1:9300
+#  elasticsearch:
+#    ip: 127.0.0.1
+#    port: 9300
+#    pool: 5
+#    cluster :
+#      name: elasticsearch
+
+
+      #      kafka:
+    # 以逗号分隔的地址列表，用于建立与Kafka集群的初始连接(kafka 默认的端口号为9092)
+#    bootstrap-servers: 192.168.1.106:9092
+      #    producer:
+      # 发生错误后，消息重发的次数。
+  #      retries: 0
+      #当有多个消息需要被发送到同一个分区时，生产者会把它们放在同一个批次里。该参数指定了一个批次可以使用的内存大小，按照字节数计算。
+      #    batch-size: 16384
+      # 设置生产者内存缓冲区的大小。
+      #      buffer-memory: 33554432
+      # 键的序列化方式
+      #      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      # 值的序列化方式
+      #     value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      # acks=0 ： 生产者在成功写入消息之前不会等待任何来自服务器的响应。
+      # acks=1 ： 只要集群的首领节点收到消息，生产者就会收到一个来自服务器成功响应。
+      # acks=all ：只有当所有参与复制的节点全部收到消息时，生产者才会收到一个来自服务器的成功响应。
+      #    acks: 1
+      # consumer:
+
+  #   group-id: test-consumer-group
+      # 自动提交的时间间隔 在spring boot 2.X 版本中这里采用的是值的类型为Duration 需要符合特定的格式，如1S,1M,2H,5D
+      #   auto-commit-interval: 1S
+      # 该属性指定了消费者在读取一个没有偏移量的分区或者偏移量无效的情况下该作何处理：
+      # latest（默认值）在偏移量无效的情况下，消费者将从最新的记录开始读取数据（在消费者启动之后生成的记录）
+      # earliest ：在偏移量无效的情况下，消费者将从起始位置读取分区的记录
+      #  auto-offset-reset: earliest
+      # 是否自动提交偏移量，默认值是true,为了避免出现重复数据和数据丢失，可以把它设置为false,然后手动提交偏移量
+      #  enable-auto-commit: true
+      # 键的反序列化方式
+      #  key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      # 值的反序列化方式
+      #  value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      # listener:
+      # 在侦听器容器中运行的线程数。
+  # concurrency: 5

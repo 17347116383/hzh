@@ -1,0 +1,35 @@
+package com.dy.rediscore;
+
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelPipeline;
+import io.netty.channel.socket.SocketChannel;
+
+/**
+ * @ProjectName: hqsm-parent
+ * @Package: com.dy.rediscore
+ * @ClassName: MessageClientInit
+ * @Author: Administrator
+ * @Description: ${description}
+ * @Date: 2019/11/16 14:59
+ * @Version: 1.0
+ * @Description: TODO(这里用一句话描述这个类的作用)
+ */
+public class MessageClientInit  extends ChannelInitializer<SocketChannel> {
+
+    /**
+     *
+     * @param ch
+     * @throws Exception
+     */
+    protected void initChannel(SocketChannel ch) throws Exception {
+        ChannelPipeline pipeline = ch.pipeline();
+        //解码器
+        //pipeline.addLast(new DecoderMyServerHandler());
+        // pipeline.addLast(new DecoderReplayingServerHandler());
+        //  pipeline.addLast(new DecoderMyLongServerHandler());
+        pipeline.addLast(new MessageDecoder());
+        pipeline.addLast(new MessageEncoder());
+
+        pipeline.addLast(new MessageClientHandler());
+    }
+}

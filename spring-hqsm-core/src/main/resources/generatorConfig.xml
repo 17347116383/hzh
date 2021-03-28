@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration
+        PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+        "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+<generatorConfiguration>
+
+
+
+    <context id="MySql" targetRuntime="MyBatis3Simple">
+        <!-- 生成的POJO实现java.io.Serializable接口 -->
+        <plugin type="org.mybatis.generator.plugins.SerializablePlugin" />
+
+        <!--注释-->
+        <commentGenerator>
+            <!-- 不添加注釋 -->
+            <property name="suppressAllComments" value="true"/>
+        </commentGenerator>
+
+        <!-- 数据库连接配置 -->
+        <jdbcConnection
+                driverClass="com.mysql.jdbc.Driver"
+                connectionURL="jdbc:mysql://192.168.2.57:3306/hjsm"
+                userId="root"
+                password=""/>
+
+        <!-- 生成POJO对象 -->
+        <javaModelGenerator targetPackage="com.itdy.hqsm.modes.entity" targetProject="D:\demo2\spring-hqsm-smt\src\main\java"></javaModelGenerator>
+        <!-- 生成mapper xml文件，并放到resources下的mapper文件夹下 -->
+        <sqlMapGenerator targetPackage="mapper"  targetProject="D:\demo2\spring-hqsm-smt\src\main\resources"></sqlMapGenerator>
+        <!-- 生成mapper xml对应dao接口，放到com.songguoliang.springboot.mapper包下-->
+        <javaClientGenerator targetPackage="com.itdy.hqsm.modes.mapper" targetProject="D:\demo2\spring-hqsm-smt\src\main\java" type="XMLMAPPER"></javaClientGenerator>
+
+        <!-- table标签可以有多个，至少一个，tableName指定表名，可以使用_和%通配符 -->
+        <table tableName="hqsm_shop"><property name="modelOnly" value="false"/></table>
+
+    </context>
+</generatorConfiguration>
