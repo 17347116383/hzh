@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
+      xmlns:shiro="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>xxxx管理系统</title>
+    <link th:replace="common/Head :: headCss">
+    <link th:href="@{/bootstrap/dataTable/datatables.min.css}" rel="stylesheet">
+
+    <style type="text/css">
+        .table > tbody > tr > td {
+            text-align: center;
+        }
+
+        /* dataTables表头居中 */
+        .table > thead:first-child > tr:first-child > th {
+            text-align: center;
+        }
+
+        .table > caption + thead > tr:first-child > td, .table > caption + thead > tr:first-child > th, .table > colgroup + thead > tr:first-child > td, .table > colgroup + thead > tr:first-child > th, .table > thead:first-child > tr:first-child > td, .table > thead:first-child > tr:first-child > th {
+            border-top: 0;
+            border-bottom: 0;
+        }
+
+        .layui-form .layui-form-item label {
+            width: 100px;
+        }
+    </style>
+</head>
+
+<body>
+<div id="wrapper">
+    <nav th:include="common/Left_Ment :: left"></nav>
+    <div id="page-wrapper" class="gray-bg">
+        <div th:include="common/Head :: head"></div>
+        <div class="wrapper wrapper-content animated fadeInRight" id="wrapperView">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="ibox float-e-margins">
+
+                        <div class="ibox-content">
+                            <div class="table-responsive" id="div-table-container">
+                                <div class="grid-btn" style="float: left;margin-top: 35px">
+                                    <button class="btn btn-primary" id="btnFile" style=""><i
+                                            class="fa fa-arrow-circle-o-down"></i>&nbsp;上传
+                                    </button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                    <button class="btn btn-primary" id="btnDelete" style=""><i
+                                            class="fa fa-minus" aria-hidden="true"></i>&nbsp;删除分类
+                                    </button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                    <button class="btn btn-primary" id="btnStatistics" style=""><i
+                                            class="fa fa-minus" aria-hidden="true"></i>&nbsp;知识统计
+                                    </button>
+                                    <span style="margin-left: 50px">按分类名称查找:</span>
+                                </div>
+                                <form id="queryForm">
+                                    <!--分类搜索-->
+                                    <div class="layui-form" lay-filter="myForm"
+                                         style="padding: 20px 30px 0 0;margin-top:33px ">
+                                        <div class="layui-input-inline" style="margin-left: 10px;margin-top: -20px">
+                                            <select id="typeNameSearch" name="typeNameSearch"
+                                                    lay-filter="attorneySelSearch"
+                                                    class="layui-form-select" lay-verify="required">
+                                                <option value=''>全部</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group hide">
+                                        <button type="submit" id="submitBtn">提交</button>
+                                    </div>
+                                </form>
+                                <table id="myTable"
+                                       class="table table-striped table-bordered table-hover dataTables-example"
+                                       style="width: 100%">
+                                    <thead>
+                                    <tr>
+                                        <!--<th>
+                                            <input type="checkbox" name="cb-check-all">
+                                        </th>-->
+                                        <th>文件名称</th>
+                                        <th>分类名称</th>
+                                        <th>上传人</th>
+                                        <th>所属部门</th>
+                                        <th>上传时间</th>
+                                        <th>操作</th>
+                                    </tr>
+                                    </thead>
+                                    <tfoot>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="layui-container" style="display: none; width: 300px" id="uploadFile">
+            <div class="layui-upload" style="margin-top: 30px;">
+                <div class="layui-row" style="text-align: center">
+                    <div class="layui-col-md12">
+                        <button type="button" class="layui-btn layui-btn-normal" id="files">选择文件</button>
+                    </div>
+                </div>
+                <br/>
+
+                <!--预览文件-->
+                <span style="margin-left: 100px ">预览文件</span>
+                <div class="layui-upload-list" style="margin-left: -30px">
+                    <table class="layui-table" >
+
+                        <thead>
+                        <tr>
+                            <th>文件名</th>
+                            <th>大小</th>
+                            <th>状态</th>
+                            <th>操作</th>
+                        </tr>
+                        </thead>
+                        <tbody id="demoList" ></tbody>
+                    </table>
+                </div>
+                <br/>
+                <br/>
+                <div class="form-group" style="border-bottom: 1px solid #e5e6e7;">
+                    <div class="layui-form-item" style="margin-left: 50px">
+                        <span style="margin-left: 45px ">自定义分类名称</span>
+                        <br/><br/>
+                        <div class="layui-input-inline">
+                            <input type="text" id="fileCategoryName" name="fileCategoryName" autocomplete="off"
+                                   class="layui-input">
+                        </div>
+                    </div>
+                </div>
+                <br/>
+                <div class="form-group" style="border-bottom: 1px solid #e5e6e7;">
+                    <div class="form-group" style="margin-left: 75px;">
+                        <!--选择一级分类-->
+                        <span style="margin-left: 10px">选择上级分类</span>
+                        <br/><br/>
+                        <div class="form-group" style="margin-left: 52px">
+                            <div class="layui-fluid">
+                                <div class="layui-form" lay-filter="myForm" style="padding: 20px 30px 0 0;">
+                                    <div class="layui-form-item">
+                                        <div class="layui-input-inline" style="margin-left: -93px;margin-top: -20px">
+                                            <select id="fileCategoryNumber" name="fileCategoryNumber"
+                                                    lay-filter="attorneySelone"
+                                                    class="layui-form-select" lay-verify="required">
+                                                <option value='0'>一级分类</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!--选择二级分类-->
+                <div class="form-group" style="margin-left: 75px;">
+                    <!-- <span style="margin-left: 10px">选择二级分类名称</span>-->
+                    <div class="form-group" style="margin-left: 52px">
+                        <div class="layui-fluid">
+                            <div class="layui-form" lay-filter="myForm" style="padding: 20px 30px 0 0;">
+                                <div class="layui-form-item">
+                                    <div class="layui-input-inline" style="margin-left: -93px;margin-top: -20px">
+                                        <select id="twoTypeName" name="twoTypeName" lay-filter="attorneySel"
+                                                class="layui-form-select" lay-verify="required">
+                                            <option value=''>请选择</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <input type="text" id="categoryId" name="categoryId"/>
+                <div class="layui-row" style="margin-top: 30px;text-align: center;">
+                    <div class="layui-col-md12">
+                        <button type="button" class="layui-btn layui-btn-sm" id="upload">上传</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- 新增分类名称-->
+        <!--<div class="layui-container" style="display: none; width: 100%" id="addLayer">
+            <div class="layui-fluid">
+                <div class="layui-form" lay-filter="myForm" style="padding: 20px 30px 0 0;">
+                    <div class="form-group" style="border-bottom: 1px solid #e5e6e7;">
+                        <div class="layui-form-item" style="margin-left: 100px">
+                            <span style="margin-left: 45px ">自定义一级分类</span>
+                            <br/><br/>
+                            <div class="layui-input-inline">
+                                <input type="text" id="onefileCategoryName" name="onefileCategoryName"
+                                       class="layui-input">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="layui-form-item" style="margin-left: 100px">
+                        <span style="margin-left: 45px">自定义二级分类</span>
+                        <br/> <br/>
+                        <div class="layui-input-inline">
+                            <input type="text" id="twofileCategoryName" name="twofileCategoryName" class="layui-input">
+                        </div>
+                    </div>
+
+                    <div class="layui-form-item layui-hide">
+                        <input type="button" lay-submit="" lay-filter="form-submit" id="form-submit" value="保存">
+                        <input type="text" name="id" placeholder="保存ID" autocomplete="off" class="layui-input">
+                        <input type="text" name="processName" autocomplete="off" class="layui-input">
+                        <input type="text" name="type" value="1" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+            </div>
+        </div>
+-->  <div class="layui-container" style="display: none; width: 100%" id="lookLayer">
+        <div class="layui-form-item" style="margin-left: 50px">
+            <br>
+            <span style="margin-left: 45px ">文件所在目录</span>
+            <br/><br/>
+            <div class="layui-input-inline">
+                <input type="text" id="lookCategoryName" name="lookCategoryName" autocomplete="off"
+                       class="layui-input">
+            </div>
+        </div>
+    </div>
+        <!-- 删除分类名称-->
+        <div class="layui-container" style="display: none; width: 100%" id="addLayerDelete">
+            <div class="layui-fluid">
+                <div class="layui-form" lay-filter="myForm" style="padding: 20px 30px 0 0;">
+                        <div class="layui-form-item" style="margin-left: 100px">
+                            <span style="margin-left: 35px ">删除一级分类名称</span>
+                            <br/><br/>
+                            <div class="layui-input-inline">
+                                <div class="form-group" style="margin-left: 80px">
+                                    <div class="layui-fluid">
+                                        <div class="layui-form" lay-filter="myForm" style="padding: 20px 30px 0 0;">
+                                            <div class="layui-form-item">
+                                                <div class="layui-input-inline"
+                                                     style="margin-left: -93px;margin-top: -20px">
+                                                    <select id="onefileCategoryNameDelete"
+                                                            name="onefileCategoryNameDelete" lay-filter="attorneySel"
+                                                            class="layui-form-select" lay-verify="required">
+                                                        <option value=''>请选择</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                   <!-- <div class="layui-form-item layui-hide">
+                        <input type="button" lay-submit="" lay-filter="form-submit" id="form-submit1" value="保存">
+                        <input type="text" name="id" placeholder="保存ID" autocomplete="off" class="layui-input">
+                        <input type="text" name="processName" autocomplete="off" class="layui-input">
+                        <input type="text" name="type" value="1" autocomplete="off" class="layui-input">
+                    </div>-->
+                </div>
+            </div>
+        </div>
+        <div class="footer">
+            <div>
+                <strong>Copyright</strong> 星记云典 Company &copy; 2014-2017
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div th:include="common/Head :: mainJs"></div>
+<div th:include="common/Head :: navMenuJs"></div>
+<script th:src="@{/bootstrap/dataTable/datatables.min.js}"></script>
+
+<!-- Page-Level Scripts -->
+<script type="text/javascript">
+
+    layui.use(['element', 'form', 'laydate'], function () {
+        yuheUtils.bindPersonalSetting();
+        var $ = layui.jquery, element = layui.element, form = layui.form, laydate = layui.laydate;
+
+        // 选中左侧菜单
+        var $thisA = $('a[href="/docment/knowledge"]');
+        $thisA.parent().attr("class", "active");
+        $thisA.parent().parent().attr("class", "nav nav-second-level collapse in");
+
+        var $wrapper = $('#div-table-container');
+        var $table = $('#myTable');
+        var param = {};
+        // datatables 初始化，这个已经整合服务端分页了
+        var _table = $table.dataTable($.extend(true, {}, CONSTANT.DATA_TABLES.DEFAULT_OPTION, {
+            searching: false,    //禁用原生搜索
+            /*  serverSide: false,   //禁用服务器端分页
+              paging: false,  // 禁用分页*/
+            ajax: function (data, callback, settings) { // ajax配置为function,手动调用异步查询
+                //封装请求参数
+                var param1 = getQueryCondition(data);
+                $.ajax({
+                    type: "get",
+                    contentType: "application/json;charset=utf-8",
+                    url: "/docment/fileList", // 表格数据接口
+                    cache: false,  //禁用缓存
+                    data: param1,    // 传入已封装的参数
+                    dataType: "json",
+                    success: function (result) {
+                        //异常判断与处理
+                        if (result.Status !== 0) {
+                            layer.msg('查询失败：' + result.msg, {icon: 2});
+                            return;
+                        }
+
+                        //封装返回数据，这里仅演示了修改属性名
+                        var returnData = {};
+                        returnData.draw = data.draw;    //这里直接自行返回了draw计数器,应该由后台返回
+                        returnData.recordsTotal = result.total;
+                        returnData.recordsFiltered = result.total;//后台不实现过滤功能，每次查询均视作全部结果
+                        returnData.data = result.data;
+
+                        //调用DataTables提供的callback方法，代表数据已封装完成并传回DataTables进行渲染
+                        //此时的数据需确保正确无误，异常判断应在执行此回调前自行处理完毕
+                        callback(returnData);
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        layer.msg('查询失败', {icon: 2});
+                    }
+                });
+
+            },
+            columns: [
+                /*CONSTANT.DATA_TABLES.COLUMN.CHECKBOX,*/
+
+                {
+                    className: "ellipsis", //文字过长时用省略号显示，CSS实现
+                    data: "fileName",
+                    width: "100px"
+                    /* render : CONSTANT.DATA_TABLES.RENDER.USER_NAME*/  //会显示省略号的列，需要用title属性实现划过时显示全部文本的效果
+                },
+                {
+                    className: "ellipsis",
+                    data: "fileCategoryName",
+                    /* render : CONSTANT.DATA_TABLES.RENDER.USER_NAME,*/
+                    //固定列宽，但至少留下一个活动列不要固定宽度，让表格自行调整。不要将所有列都指定列宽，否则页面伸缩时所有列都会随之按比例伸缩。
+                    //切记设置table样式为table-layout:fixed; 否则列宽不会强制为指定宽度，也不会出现省略号。
+                    width: "100px"
+                }, {
+                    className: "ellipsis", //文字过长时用省略号显示，CSS实现
+                    data: "uploadPeople",
+                    width: "100px"
+                },
+                {
+                    className: "ellipsis", //文字过长时用省略号显示，CSS实现
+                    data: "uploadDept",
+                    width: "100px"
+                },
+                {
+                    className: "ellipsis", //文字过长时用省略号显示，CSS实现
+                    data: "uploadDate",
+                    width: "150px"
+                },
+                {
+                    className: "td-operation",
+                    data: null,
+                    defaultContent: "",
+                    orderable: false,
+                    width: "50px"
+                },
+                {
+                    className: "ellipsis", //文字过长时用省略号显示，CSS实现
+                    data: "id",
+                    width: "100px",
+                    visible: false
+
+                    /* render : CONSTANT.DATA_TABLES.RENDER.USER_NAME*/  //会显示省略号的列，需要用title属性实现划过时显示全部文本的效果
+                },
+            ],
+            "createdRow": function (row, data, index) {
+                //行渲染回调,在这里可以对该行dom元素进行任何操作
+                //给当前行加样式
+
+                //给当前行某列加样式
+                // $('td', row).eq(3).addClass(data.status?"text-success":"text-error");
+                //不使用render，改用jquery文档操作呈现单元格
+                /*var str=$('td', row).eq(5).text();
+                str='0'?'未阅读':'已阅读'
+                $('td', row).eq(5).html(str);*/
+                var $btnCheck = $('<button type="button" row-event="delete" class="btn btn-primary btn-xs btn-outline" style="margin-bottom:0">删除</button>');
+                var $btnCheck1 = $('<button type="button" row-event="editor" class="btn btn-primary btn-xs btn-outline" style="margin-bottom:0">修改分类</button>');
+                var $btnCheck2 = $('<button type="button" row-event="look" class="btn btn-primary btn-xs btn-outline" style="margin-bottom:0">目录</button>');
+                $('td', row).eq(5).append($btnCheck).append('&nbsp;&nbsp;&nbsp;')
+                $('td', row).eq(5).append($btnCheck1).append('&nbsp;&nbsp;&nbsp;')
+               $('td', row).eq(5).append($btnCheck2)
+            },
+            "drawCallback": function (settings) {
+                //渲染完毕后的回调
+                //清空全选状态
+                $(":checkbox[name='cb-check-all']", $wrapper).prop('checked', false);
+                //默认选中第一行
+                $("tbody tr", $table).eq(0).click();
+            }
+        })).api();  //此处需调用api()方法,否则返回的是JQuery对象而不是DataTables的API对象
+
+
+        /*上传文件*/
+          var idx;
+        layui.use('upload', function () {
+            var $ = layui.jquery
+                , upload = layui.upload;
+            var demoListView = $('#demoList')  //文件列表显示的元素
+            //选完文件后不自动上传
+            upload.render({
+                elem: '#files'
+                , url: '/docment/uploadLocal'
+                , auto: false
+                , accept: 'file'
+                , size: 10240
+                , multiple: true
+                , bindAction: '#upload'
+                , before: function (obj) { //obj参数包含的信息，跟 choose回调完全一致。其中输入向后台传输的参数
+                    this.data = {
+                        'parentCategoryNumber': $("#fileCategoryNumber option:selected").val(),
+                        'fileCategoryName': $("#fileCategoryName").val(),
+                        'fileCategoryNumber': $("#categoryId").val()
+                    };
+                },
+                choose: function (obj) {
+                    var files = this.files = obj.pushFile(); //将每次选择的文件追加到文件队列
+                    //读取本地文件
+                    obj.preview(function (index, file, result) {
+                        var tr = $(['<tr id="upload-' + index + '">'
+                            , '<td >' + file.name + '</td>'
+                            , '<td>' + (file.size / 1024).toFixed(1) + 'kb</td>'
+                            , '<td>等待上传</td>'
+                            , '<td>'
+                            , '<button class="layui-btn layui-btn-mini layui-btn-danger demo-delete">删除</button>'
+                            , '</td>'
+                            , '</tr>'].join(''));
+
+                        //删除
+                        tr.find('.demo-delete').on('click', function () {
+                            delete files[index]; //删除对应的文件
+                            tr.remove();
+                           /* uploadListIns.config.elem.next()[0].value = ''; *///清空 input file 值，以免删除后出现同名文件不可选
+                        });
+                        demoListView.append(tr);
+                    });
+                },
+                done: function (r) {
+                    if (r.Status === 0) {
+                        /*layer.open({
+                            type: 0,
+                            content: '上传成功'
+                        });*/
+                         layer.msg('上传成功', {icon: 1, time: 1000}, function () {
+                        });
+                        layer.close(idx);
+                        tableReload();
+
+                    } else if (r.Status === 503) {
+                        layer.msg('分类名称不能为空', {icon: 2, time: 1000}, function () {
+
+                        });
+                    } else {
+                        layer.msg('上传失败', {icon: 2, time: 1000});
+
+                    }
+                }
+            });
+
+        });
+        //删除分类
+        $('#btnDelete').on('click', function () {
+            openDelete();
+        });
+        function openDelete(item) {
+            idx = layer.open({
+                type: 1,
+                title: '删除分类名称',
+                resize: true,
+                fixed: true,
+                shadeClose: true,
+                shade: 0.1,
+                scrollbar: false,
+                area: ['450px', '400px'],
+                content: $('#addLayerDelete'),
+                btn: ['确定', '取消'],
+                yes: function (index, layaro) {
+                    $('#form-submit1').click();
+                },
+                cancel: function (index, layaro) {
+                }
+            });
+        }
+
+         //知识统计
+        $('#btnStatistics').on('click', function () {
+            openStatistics();
+        });
+        function openStatistics(item) {
+            idx = layer.open({
+                type: 2,
+                title: '知识上传统计',
+                resize: true,
+                fixed: true,
+                shadeClose: true,
+                shade: 0.1,
+                scrollbar: false,
+                area: ['1200px', '800px'],
+                content: '/docment/knowledgeStatistics',
+                /*btn: ['确定', '取消'],*/
+                yes: function (index, layaro) {
+
+                },
+                cancel: function (index, layaro) {
+                }
+            });
+        }
+
+        /*初始化加载页面下拉框值*/
+        $(function () {
+            $.ajax({
+                url: "/docment/categoryList",
+                type: "post",
+                dataType: "json",
+                success: function (data) {
+                    var $attorneySel = $('select[name="typeNameSearch"]');
+                    $.each(data, function (i, item) {
+                        $attorneySel.append('<option value="' + item.fileCategoryName + '">' + item.fileCategoryName + '</option>');
+                    });
+                    form.render('select');
+                }
+            });
+        })
+
+        /*初始化页面下拉框*/
+        function reloadInit() {
+            $("#typeNameSearch").empty()
+            $("#typeNameSearch").append("<option value=''>全部</option>");
+            $(function () {
+                $.ajax({
+                    url: "/docment/categoryList",
+                    type: "post",
+                    dataType: "json",
+                    success: function (data) {
+                        var $attorneySel = $('select[name="typeNameSearch"]');
+                        $.each(data, function (i, item) {
+                            $attorneySel.append('<option value="' + item.fileCategoryName + '">' + item.fileCategoryName + '</option>');
+                        });
+                        form.render('select');
+                    }
+                });
+            })
+        }
+
+        /**
+         * 获取查询参数
+         */
+        function getQueryCondition(data) {
+            param.fullSearch = data.search.value;
+            // 组装分页参数
+            param.current = (data.start / 10) + 1;    // 计算页码
+            param.size = data.length;
+            return param;
+        }
+
+        // 表单提交
+        $('#queryForm').submit(function (e) {
+            var params = yuheUtils.getFormJson('queryForm');
+            param.typeNameSearch = params.typeNameSearch;
+            console.log('param=', param);
+            tableReload();
+        });
+        form.on('select(attorneySelSearch)', function (dataAttorney) {
+            $('#submitBtn').submit();
+            form.render('select');
+        });
+
+
+        /*当输入框内容改变时下拉列表框初始化*/
+        $("#fileCategoryName").keyup(function () {
+            var $attorneySel = $('select[name="typeName"]');
+            $attorneySel.val('')
+            form.render('select');
+        })
+
+        //产生唯一编号
+        function uuid() {
+            function S4() {
+                return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
+            }
+
+            function guid() {
+                return (S4() + S4() + S4() + S4());
+            }
+
+            var myID = guid();
+            console.log(myID)
+            $("#categoryId").val(myID)
+
+        }
+
+        //监听上传弹框的下拉框事件
+        form.on('select(attorneySelone)', function (data) {
+            var options = $("#oneTypeName option:selected").val();
+            $.ajax({
+                url: "/docment/twoCategoryList?parentCategoryId=" + options,
+                type: "get",
+                dataType: "json",
+                success: function (data) {
+                    var $attorneySel = $('select[name="twoTypeName"]');
+                    $.each(data, function (i, item) {
+                        $attorneySel.append('<option value=' + item.parentCategoryId + '>' + item.categoryName + '</option>');
+                    });
+                    form.render('select');
+                }
+            });
+            form.render('select');
+        });
+        // 上传框
+        $('#btnFile').on('click', function () {
+            uuid();
+            imporFile();
+        });
+        /*加载上传弹框的下拉框的值*/
+        function imporFile() {
+            initInformation()
+            $.ajax({
+                url: "/docment/oneCategoryList",
+                type: "post",
+                dataType: "json",
+                success: function (data) {
+                    var $attorneySel = $('select[name="fileCategoryNumber"]');
+                    $.each(data, function (i, item) {
+                        $attorneySel.append('<option value=' + item.fileCategoryNumber + '>' + item.fileCategoryName + '</option>');
+                    });
+                    form.render('select');
+                }
+            });
+            idx = layer.open({
+                type: 1,
+                title: '选择需要上传的文件',
+                resize: true,
+                fixed: true,
+                shadeClose: true,
+                shade: 0.1,
+                scrollbar: false,
+                area: ['650px', '700px'],
+                content: $('#uploadFile'),
+            });
+        }
+
+        /*初始化上传弹框信息*/
+        function initInformation() {
+            $(".layui-upload-choose").html('')
+            $("#demoList").html('')
+            $("#fileCategoryName").val('')
+            $("#fileCategoryNumber").empty()
+            $("#fileCategoryNumber").append("<option value='0'>一级分类</option>");
+        }
+
+        // 行按钮事件 删除文件
+        $table.on('click', 'button[row-event="delete"]', function () {
+            var item = _table.row($(this).closest('tr')).data();
+            $.get("/docment/deleteOne?id=" + item.id, function (r) {
+                if (r.Status === 0) {
+                    layer.msg('删除成功', {icon: 1, time: 1000}, function () {
+                        tableReload();
+                        reloadInit()
+                    });
+                } else {
+                    layer.msg('删除失败', {icon: 2, time: 1000}, function () {
+                    });
+                }
+            })
+        });
+
+        // 行按钮事件 修改分类
+        $table.on('click', 'button[row-event="editor"]', function () {
+            // $(".glyphicon-user").html("");
+            // $("input[name='nextUserId']").val("");
+            /*  $(that).html('');
+              $(that).next().next().val('');*/
+            var item = _table.row($(this).closest('tr')).data();
+            layer.open({
+                type: 2,
+                title: '修改文件所属分类',
+                resize: true,
+                fixed: true,
+                shadeClose: true,
+                btn: ['确定', '取消'],
+                shade: 0.1,
+                scrollbar: true,
+                area: ['380px', '380px'],
+                content: '/docment/categoryZtree',
+                yes: function (layero, index) {
+                    var name = window[index.find('iframe')[0]['name']];
+                    var value=name.zTreeOnCheck();
+                    var editInfo=[];
+                    for (var i = 0; i<value.length ; i++) {
+                        editInfo.push(value[i].fileCategoryNumber)
+                        editInfo.push(value[i].fileCategoryName)
+                        editInfo.push(value[i].parentCategoryNumber)
+                    }
+                    layer.confirm("是否进行修改？", { btn: ["确定","取消"]  }, function(){
+                        $.ajax({
+                            async : false,
+                            cache : false,
+                            traditional: true,
+                            url: "/docment/updateCategory?id="+item.id,
+                            type: "get",
+                            data:{editInfo:editInfo},
+                            success: function (r) {
+                                if (r.Status === 0) {
+                                    layer.msg('修改成功', {icon: 1, time: 1000}, function () {
+                                        tableReload();
+                                    });
+                                    layer.close(layero)
+                                } else {
+                                    layer.msg('修改失败', {icon: 2, time: 1000}, function () {
+                                    });
+                                }
+                            }
+                        });
+                    })
+
+                }
+            });
+        });
+        // 行按钮事件 查看目录文件
+        $table.on('click', 'button[row-event="look"]', function () {
+            var item = _table.row($(this).closest('tr')).data();
+            $.ajax({
+                url: "/docment/selectBelongCategory?id="+item.id,
+                type: "get",
+                dataType: "text",
+                success: function (data) {
+                    $("#lookCategoryName").val(data)
+                }
+            });
+            layer.open({
+                type: 1,
+                title: '文件所属分类',
+                resize: true,
+                fixed: true,
+                shadeClose: true,
+                shade: 0.1,
+                scrollbar: false,
+                area: ['300px', '200px'],
+                content: $('#lookLayer'),
+
+            });
+        });
+        // 刷新表格
+        function tableReload() {
+            _table.ajax.reload(function () {
+                _table.columns.adjust().draw();
+
+            }, false);
+        }
+
+        function reloadCategory() {
+            $.ajax({
+                url: "/docment/categoryList",
+                type: "post",
+                dataType: "json",
+                success: function (data) {
+                    var $attorneySel = $('select[name="typeNameSearch"]');
+                    $.each(data, function (i, item) {
+                        $attorneySel.append('<option value="' + item.fileCategoryName + '">' + item.fileCategoryName + '</option>');
+                    });
+                    form.render('select');
+                }
+
+            });
+
+        }
+
+
+    });
+
+
+</script>
+
+</body>
+
+</html>

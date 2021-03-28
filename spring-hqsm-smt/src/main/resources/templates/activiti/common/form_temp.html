@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${taskData.flowVariable['currentNodeName']}">当前节点</title>
+    <div th:include="common/Head :: headCss"></div>
+    <link rel="stylesheet" th:href="@{/ztree/css/metroStyle/metroStyle.css}">
+    <link th:href="@{/web-upload/css/webuploader.css}" rel="stylesheet">
+<!--    <link href="https://cdn.bootcss.com/webuploader/0.1.1/webuploader.css" rel="stylesheet">-->
+</head>
+
+<body style="background: white">
+
+<!--todo 流程表单头部， 还未完成-->
+<div th:include="activiti/common/form :: formHeadView"></div>
+
+<div class="container" style="padding-left:0!important;padding-right:0!important;">
+    <!--下面是业务表单-->
+    <form name="businessForm" id="businessForm">
+        <!--表格内容-->
+        <div class="table-responsive" th:utext="${table}"></div>
+        <!--隐藏字段，用于路由条件变量判断-->
+        <div id="hideDiv">
+            <input type="hidden" name="type" value="2">
+        </div>
+        <!--用于表单必填验证-->
+        <button style="display: none" type="submit" id="busBtn">提交</button>
+    </form>
+
+    <!--驳回节点列表弹出框-->
+    <div id="canBackNodeLayer" style="display: none;padding:10px;">
+        <div class="wrapper">
+            <div id="backNodeTree" class="ztree"></div>
+        </div>
+    </div>
+
+</div>
+
+<!--提交任务模态框-->
+<div th:include="activiti/common/form :: submitTaskModal"></div>
+
+<div th:include="common/Head :: mainJs"></div>
+<script th:src="@{/ztree/jquery.ztree.all.min.js}"></script>
+<script th:src="@{/ztree/jquery.ztree.exhide.js}"></script>
+<script th:src="@{/web-upload/js/webuploader.js}"></script>
+<!--<script src="https://cdn.bootcss.com/webuploader/0.1.1/webuploader.js"></script>-->
+
+<script th:utext="${script}"></script>
+</body>
+</html>

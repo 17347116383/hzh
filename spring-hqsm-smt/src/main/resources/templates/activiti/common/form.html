@@ -1,0 +1,142 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
+      xmlns:shiro="http://www.w3.org/1999/xhtml">
+
+    <!--流程表单头-->
+    <div th:fragment="formHeadView">
+        <div class="container" style="padding-left:0!important;padding-right:0!important;background: #5f83b9">
+            <div style="float: left; padding: 8px; color: white;">
+                <span th:text="${taskData.flowVariable['processName']}"></span>
+                <span th:text="${'-当前环节：' + taskData.flowVariable['currentNodeName']}"></span>
+            </div>
+            <div style="float: right;">
+                <button class="btn btn-primary" data-toggle="modal" data-target="#submitTaskModal">办理任务</button>
+                <button class="btn btn-info" data-toggle="modal" onclick="showFlowChart()">查看流程图</button>
+                <button class="btn btn-danger" data-toggle="modal" onclick="showComments()">查看流转意见</button>
+            </div>
+        </div>
+        <div class="container" style="padding-left:0!important;padding-right:0!important;">
+            <div class="text-center" style="padding: 45px 0 45px 0; background: #eaeaea"><h2 th:text="${taskData.flowVariable['processName']}">请假流程</h2></div>
+        </div>
+    </div>
+
+    <div th:fragment="hisTaskFormHead">
+        <div class="container" style="padding-left:0!important;padding-right:0!important;background: #999688">
+            <div style="float: left; padding: 8px; color: white;">
+                <span th:text="${taskData.flowVariable['processName']}"></span>
+                <span th:text="${'-当前环节：' + taskData.flowVariable['currentNodeName']}"></span>
+            </div>
+            <div style="float: right;">
+                <!--<button class="btn btn-primary" data-toggle="modal" data-target="#submitTaskModal">办理任务</button>-->
+                <button class="btn btn-info" data-toggle="modal" onclick="showFlowChart()">查看流程图</button>
+                <button class="btn btn-danger" data-toggle="modal" onclick="showComments()">查看流转意见</button>
+            </div>
+        </div>
+        <div class="container" style="padding-left:0!important;padding-right:0!important;">
+            <div class="text-center" style="padding: 45px 0 45px 0; background: #eaeaea"><h2 th:text="${taskData.flowVariable['processName']}">请假流程</h2></div>
+        </div>
+    </div>
+
+    <!-- 模态框（Modal）模板 -->
+    <div th:fragment="submitTaskModal">
+        <div class="modal fade" id="submitTaskModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                        <h4 class="modal-title" id="myModalLabel" th:text="${'任务办理——当前环节：' + taskData.flowVariable['currentNodeName']}">任务办理</h4>
+                    </div>
+                    <div class="modal-body">
+                        <!--form-->
+                        <form id="taskForm" class="form-horizontal" role="form">
+
+                            <!--选择审批人-->
+                            <div class="form-group" style="border-bottom: 1px solid #e5e6e7;" th:if="${taskData.flowVariable['nextNodeNum'] > 0}">
+                                <label class="col-sm-2 control-label" style="width: 100px">下一审批人</label>
+                                <div class="form-group">
+                                    <span class="glyphicon glyphicon-user" style="margin-top: 9px;"  onclick="selUser(this)">
+                                    </span>
+                                    <span id="userShow"></span>
+                                    <input type="hidden" name="nextUserId"  value=""/>
+                                </div>
+                            </div>
+                            <!--选择抄送人-->
+                            <div class="form-group" style="border-bottom: 1px solid #e5e6e7;">
+                                <label class="col-sm-2 control-label" style="width: 100px">抄送人</label>
+                                <div class="form-group">
+                                    <span class="glyphicon glyphicon-user" style="margin-top: 9px;" onclick="selUser(this)">
+                                    </span>
+                                    <span></span>
+                                    <input type="hidden" name="ccUserId"  value=""/>
+                                </div>
+                            </div>
+                            <!--下一节点-->
+                            <div class="form-group" style="border-bottom: 1px solid #e5e6e7;">
+                                <label class="col-sm-2 control-label" style="width: 100px">下一环节</label>
+                                <div class="form-group">
+                                    <label class="radio-inline" th:if="${taskData.flowVariable['nextNodeNum'] == 0}">
+                                        <input type="radio" name="arc" checked>
+                                        <span>归档</span>
+                                    </label>
+                                    <label class="radio-inline" th:each="nextNode, info: ${taskData.flowVariable['nextNodes']}">
+                                        <input type="radio" name="targetTaskDefKey" th:id="${'nextNode' + info.index}" th:value="${nextNode.id}" th:checked="${info.size==1}"
+                                               th:data-assignee="${nextNode.assignee}" th:data-candidateUserIds="${nextNode.candidateUserIds}">
+                                        <span th:text="${nextNode.name}">选项1</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label" style="width: 100px"></label>
+                                <div class="col-sm-9">
+                                    <select id="commOpinion" class="form-control">
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label" style="width: 100px">审批意见</label>
+                                <div class="col-sm-9">
+                                    <textarea class="form-control" name="comment"  rows="5" placeholder="填写审批意见"></textarea>
+                                </div>
+                            </div>
+
+                            <!--流程流转相关的关键字段值-->
+                            <input type="text" name="userId" th:value="${taskData.flowVariable['userId']}">
+                            <input type="text" name="processName" th:value="${taskData.flowVariable['processName']}">
+                            <input type="text" name="processDefinitionId" th:value="${taskData.flowVariable['processDefinitionId']}">
+                            <input type="text" name="processInstanceId" th:value="${taskData.flowVariable['processInstanceId']}">
+                            <input type="text" name="taskId" th:value="${taskData.flowVariable['taskId']}">
+                            <input type="text" name="executionId" th:value="${taskData.flowVariable['executionId']}">
+                            <input type="text" name="currentNodeKey" th:value="${taskData.flowVariable['currentNodeKey']}">
+                            <input type="text" name="currentNodeName" th:value="${taskData.flowVariable['currentNodeName']}">
+                            <input type="text" name="firstNodeKey" th:value="${taskData.flowVariable['firstNodeKey']}">
+                            <input type="text" name="firstNode" th:value="${taskData.flowVariable['firstNode']}">
+                            <input type="text" name="formKey" th:value="${taskData.flowVariable['formKey']}">
+                            <input type="text" name="mainFormKey" th:value="${taskData.flowVariable['mainFormKey']}">
+                            <input type="text" name="firstSubmit" th:value="${taskData.flowVariable['firstSubmit']}">
+                            <input type="text" name="nextNodeNum" th:value="${taskData.flowVariable['nextNodeNum']}">
+                            <input type="text" name="execType" th:value="${execType==null?taskData.flowVariable['execType']:execType}">
+                            <!--<input type="hidden" name="nextNodes" th:value="${taskData.flowVariable['nextNodes']}">-->
+                        </form>
+                    </div>
+                    <!--流程流转按钮-->
+                    <div class="modal-footer">
+                        <button type="button" id="submitBtn" class="btn btn-primary" data-dismiss="modal" onclick="submit(preSubmit);" th:text="${taskData.flowVariable['firstNode']?'提交':'同意'}">同意</button>
+                        <button type="button" class="btn btn-danger" data-dismiss="modal" onclick="back2PreNode()" th:remove="${taskData.flowVariable['firstNode']?'all':'none'}">驳回</button>
+                        <button type="button" class="btn btn-bitbucket" data-dismiss="modal" onclick="back2FirstNode()" th:remove="${taskData.flowVariable['firstNode']?'all':'none'}">回退首环节</button>
+                        <button type="button" class="btn btn-pinterest" onclick="back2AnyNode()" th:remove="${taskData.flowVariable['firstNode']?'all':'none'}">回退任意环节</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                    </div>
+
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal-dialog -->
+        </div>
+    </div>
+
+    <!--业务表单提交按钮-->
+    <aside th:fragment="busBtn">
+        <button style="display: none" type="submit" id="busBtn">提交</button>
+    </aside>
+
+
+</html>

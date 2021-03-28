@@ -1,0 +1,57 @@
+<!--员工加班申请-->
+            <table class="table table-bordered">
+                <tbody>
+                <tr>
+                    <td style="vertical-align:middle;text-align: center; ">申请人</td>
+                    <td><input type="text" class="form-control" id="proPeople" name="proPeople"  oninput="preSubmit(this)" oninvalid="setCustomValidity('申请人不允许为空')" required/></td>
+                    <td style="vertical-align:middle;text-align: center; ">填表日期</td>
+                    <td><input type="text" class="form-control" oninput="preSubmit(this)"  id="createTime" name="createTime" required/></td>
+                </tr>
+                <tr>
+                    <td style="vertical-align:middle;text-align: center; ">加班员工姓名</td>
+                    <td><input type="text" class="form-control" id="jobspeople" name="propeople" oninput="preSubmit(this)" oninvalid="setCustomValidity('加班员工姓名不允许为空')" required/></td>
+                    <td style="vertical-align:middle;text-align: center; ">部门</td>
+                    <td><input type="text" class="form-control" id="depart" name="propeople" oninput="preSubmit(this)" oninvalid="setCustomValidity('部门不允许为空')" required/></td>
+                </tr>
+                <tr>
+                    <td colspan="4"><textarea placeholder="部门负责人签字" class="form-control" name="reason" oninput="preSubmit(this)" oninvalid="setCustomValidity('不允许为空')" required></textarea></td>
+                </tr>
+                <td><span  style="vertical-align:middle;text-align: center;color:red;">加班证明人需由部门负责人确认（可加签确认)</span></td>
+                <td style="vertical-align:middle;text-align: center; ">合计加班时间</td>
+                <td colspan="2"><input type="text" class="form-control" id="jobTime" name="jobTime" oninput="preSubmit(this)" oninvalid="setCustomValidity('合计加班时间不允许为空')" required/>小时</td>
+                </tr>
+                <tr>
+                    <td colspan="4" style="vertical-align:middle;text-align: center; ">人事部核准对应加班时间数：
+                        <input type="text" class="form-control" id="checkJobTime" name="checkJobTime" oninput="preSubmit(this)" oninvalid="setCustomValidity('人事部核准对应加班时间数不允许为空')" required/></td>
+
+                </tr>
+                <tr>
+                    <td colspan="4" style="vertical-align:middle;text-align: center; ">发放对应调休条签收：
+                        <input type="text" class="form-control" id="rest" name="rest" oninput="preSubmit(this)" oninvalid="setCustomValidity('发放对应调休条签收不允许为空')" required/></td>
+                </tr>
+                </tbody>
+            </table>
+<script>
+    layui.use('laydate', function(){
+        var laydate = layui.laydate;
+
+        laydate.render({
+            elem: '#createTime'
+        });
+    });
+
+    /**
+     * 重写表单提交前事件
+     * @returns {boolean}
+     */
+    function preSubmit(i) {
+        if(i.validity.patternMismatch ===true){
+            i.setCustomValidity("请输入数字");
+            i.validationMessage("请输入数字");
+        }
+        i.setCustomValidity("");
+    }
+
+</script>
+</body>
+</html>

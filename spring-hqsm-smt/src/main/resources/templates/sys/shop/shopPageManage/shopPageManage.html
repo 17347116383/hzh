@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
+      xmlns:shiro="http://www.w3.org/1999/xhtml">
+<head th:include="common/Head :: headCss">
+
+</head>
+<div>
+    <link href="../bootstrap/js/project/sys/shop/css/fileinput.min.css" rel="stylesheet">
+
+    <link rel="stylesheet" type="text/css" href="../bootstrap/dataTable/datatables.min.css"/>
+
+
+    <style type="text/css">
+        .table > tbody > tr > td {
+            text-align: center;
+        }
+
+        /* dataTables表头居中 */
+        .table > thead:first-child > tr:first-child > th {
+            text-align: center;
+        }
+    </style>
+
+    <style>
+
+
+        .nav-tabs > li {
+            display: inline-block;
+            width: 14%;
+            margin-right: 10px !important;
+        }
+
+        .nav-tabs li a {
+            line-height: 2;
+            color: #000000 !important;
+            background: #dad9d9 !important;
+        }
+
+        .nav-tabs .active a {
+
+            background: #3c8dbc !important;
+            color: #ffffff !important;
+
+        }
+
+        .new {
+            height: 40px !important;
+            border: none !important;
+        }
+
+        #slideshow a {
+
+            color: #000000 !important;
+            background: #dad9d9 !important;
+        }
+
+        #slideshow .active a {
+            border-top: solid 2px #3498db !important;
+            background: #3c8dbc !important;
+            color: #ffffff !important;
+
+        }
+
+
+    </style>
+</div>
+<body>
+<div id="wrapper">
+    <nav th:include="common/Left_Ment :: left"></nav>
+    <div id="page-wrapper" class="gray-bg dashbard-1">
+        <div th:include="common/Head :: head"></div>
+
+        <ul id="myTab" class="nav nav-tabs">
+            <li class="active"><a href="#home" data-toggle="tab">商品热销榜</a></li>
+
+            <li class="dropdown">
+                <a href="#" id="myTabDrop1" class="dropdown-toggle"
+                   data-toggle="dropdown">
+                    首页轮播图 <b class="caret"></b></a>
+                <ul class="dropdown-menu" role="menu" aria-labelledby="myTabDrop1" id="slideshow">
+                    <li><a href="#slideshow-First" tabindex="-1" data-toggle="tab">第一张板排</a></li>
+                    <li><a href="#slideshow-Second" tabindex="-1" data-toggle="tab">第二张板排</a></li>
+                    <li><a href="#slideshow-Third" tabindex="-1" data-toggle="tab">第三张板排</a></li>
+                    <li><a href="#slideshow-Fourth" tabindex="-1" data-toggle="tab">第四张板排</a></li>
+                </ul>
+            </li>
+
+            <li><a href="#ios" data-toggle="tab">iOS</a></li>
+
+        </ul>
+        <div id="myTabContent" class="tab-content">
+            <div class="tab-pane fade in active" id="home">
+
+                <div>
+                    <table class="table table-striped table-bordered table-hover dataTables-example">
+                        <thead>
+                        <tr>
+                            <th></th>
+                            <th>ID</th>
+                            <th>商品名称</th>
+                            <th>商品价格</th>
+                            <th>商品数量</th>
+                            <th>详情图</th>
+                            <th>注册时间</th>
+                            <th>新品排序号</th>
+                        </tr>
+                        </thead>
+                        <tfoot>
+                        </tfoot>
+                    </table>
+
+                </div>
+
+            </div>
+            <div class="tab-pane fade" id="ios">
+                <p>iOS 是一个由苹果公司开发和发布的手机操作系统。最初是于 2007 年首次发布 iPhone、iPod Touch 和 Apple
+                    TV。iOS 派生自 OS X，它们共享 Darwin 基础。OS X 操作系统是用在苹果电脑上，iOS 是苹果的移动版本。</p>
+            </div>
+
+            <!--第一张轮播图 -->
+            <div class="tab-pane fade" id="slideshow-First">
+                <div v-show="!showList" class="panel panel-default">
+                    <div class="panel-heading">{{title}}</div>
+                    <form class="form-horizontal" id="slideshow_1" name="id">
+                        <input type="hidden" name="slideshow_1_id">
+                        <div class="form-group">
+                            <div class="col-sm-2 control-label">商品图片</div>
+                            <div class="col-sm-10">
+                                <div class="form-group" id="picimg">
+                                    <input type="file" name="reportFile" id="reportFile" multiple class="file-loading"/>
+                                    <input type="hidden" class="form-control" name="detail_picture" id="detail_picture"
+
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group" id="form-group-1">
+                            <div class="col-sm-2 control-label">文字描述一</div>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" name="text_1_1"
+                                       id="text_1_1" v-model="carousel.text_1_1" placeholder="文字描述一"
+                                />
+                            </div>
+                        </div>
+                        <div class="form-group" id="form-group-2">
+                            <div class="col-sm-2 control-label">文字描述二</div>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" name="text_1_2"
+                                       v-model="carousel.text_1_2" placeholder="文字描述二"/>
+                            </div>
+                        </div>
+                        <div class="form-group" id="form-group-3">
+                            <div class="col-sm-2 control-label">文字描述三</div>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" id="text_1_3" name="text_1_3"
+                                       v-model="carousel.text_1_3"
+                                       placeholder="文字描述三"/>
+                            </div>
+                        </div>
+                        <div class="form-group" id="form-group-4">
+                            <div class="col-sm-2 control-label">文字描述四</div>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" id="text_1_4" name="text_1_4"
+                                       v-model="carousel.text_1_4"
+                                       placeholder="文字描述四"/>
+                            </div>
+                        </div>
+                        <div class="form-group" id="form-group-5">
+                            <div class="col-sm-2 control-label">文字描述五</div>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" id="text_1_5" name="text_1_5"
+                                       v-model="carousel.text_1_5"
+                                       placeholder="文字描述五"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-2 control-label"></div>
+                            <input type="button" name="submit" class="btn btn-primary" @click="Update('1')" value="确定"/>
+                            &nbsp;&nbsp;<input type="button" class="btn btn-warning" value="返回"/>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+
+            <!--第二张轮播图 -->
+            <div class="tab-pane fade" id="slideshow-Second">
+                <div v-show="!showList_Second" class="panel panel-default">
+                    <div class="panel-heading">{{title}}</div>
+                    <form class="form-horizontal" id="slideshow_2" name="id">
+                        <input type="hidden" name="slideshow_2_id">
+                        <div class="form-group">
+                            <div class="col-sm-2 control-label">商品图片</div>
+                            <div class="col-sm-10">
+                                <div class="form-group" id="picimg_2">
+                                    <input type="file" name="reportFile_2" id="reportFile_2" multiple
+                                           class="file-loading"/>
+                                    <input type="hidden" class="form-control" name="detail_picture"
+                                           id="detail_picture_2"
+
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group" id="form-group-2-1">
+                            <div class="col-sm-2 control-label">文字描述一</div>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" name="text_2_1"
+                                       id="text_2_1" v-model="carouse2.text_2_1" placeholder="文字描述一"
+                                />
+                            </div>
+                        </div>
+                        <div class="form-group" id="form-group-2-2">
+                            <div class="col-sm-2 control-label">文字描述二</div>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" name="text_2_2"
+                                       v-model="carouse2.text_2_2" placeholder="文字描述二"/>
+                            </div>
+                        </div>
+                        <div class="form-group" id="form-group-2-3">
+                            <div class="col-sm-2 control-label">文字描述三</div>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" id="text_2_3" name="text_2_3"
+                                       v-model="carouse2.text_2_3"
+                                       placeholder="文字描述三"/>
+                            </div>
+                        </div>
+                        <div class="form-group" id="form-group-2-4">
+                            <div class="col-sm-2 control-label">文字描述四</div>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" id="text_2_4" name="text_2_4"
+                                       v-model="carouse2.text_2_4"
+                                       placeholder="文字描述四"/>
+                            </div>
+                        </div>
+                        <div class="form-group" id="form-group-2-5">
+                            <div class="col-sm-2 control-label">文字描述五</div>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" id="text_2_5" name="text_2_5"
+                                       v-model="carouse2.text_2_5"
+                                       placeholder="文字描述五"/>
+                            </div>
+                        </div>
+                        <div class="form-group" id="form-group-2-6">
+                            <div class="col-sm-2 control-label">文字描述六</div>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" id="text_2_6" name="text_2_6"
+                                       v-model="carouse2.text_2_6"
+                                       placeholder="文字描述六"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-2 control-label"></div>
+                            <input type="button" name="submit" class="btn btn-primary" @click="Update('2')" value="确定"/>
+                            &nbsp;&nbsp;<input type="button" class="btn btn-warning" value="返回"/>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+
+            <!--第三张轮播图 -->
+            <div class="tab-pane fade" id="slideshow-Third">
+                <div v-show="!showList_Third" class="panel panel-default">
+                    <div class="panel-heading">{{title}}</div>
+                    <form class="form-horizontal" id="slideshow_3" name="id">
+                        <input type="hidden" name="slideshow_3_id">
+                        <div class="form-group">
+                            <div class="col-sm-2 control-label">商品图片</div>
+                            <div class="col-sm-10">
+                                <div class="form-group" id="picimg_3">
+                                    <input type="file" name="reportFile_3" id="reportFile_3" multiple
+                                           class="file-loading"/>
+                                    <input type="hidden" class="form-control" name="detail_picture"
+                                           id="detail_picture_3"
+
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group" id="form-group-3-1">
+                            <div class="col-sm-2 control-label">文字描述一</div>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" name="text_3_1"
+                                       id="text_3_1" v-model="carouse3.text_3_1" placeholder="文字描述一"
+                                />
+                            </div>
+                        </div>
+                        <div class="form-group" id="form-group-3-2">
+                            <div class="col-sm-2 control-label">文字描述二</div>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" name="text_3_2"
+                                       v-model="carouse3.text_3_2" placeholder="文字描述二"/>
+                            </div>
+                        </div>
+                        <div class="form-group" id="form-group-3-3">
+                            <div class="col-sm-2 control-label">文字描述三</div>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" id="text_3_3" name="text_3_3"
+                                       v-model="carouse3.text_3_3"
+                                       placeholder="文字描述三"/>
+                            </div>
+                        </div>
+                        <div class="form-group" id="form-group-3-4">
+                            <div class="col-sm-2 control-label">文字描述四</div>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" id="text_3_4" name="text_3_4"
+                                       v-model="carouse3.text_3_4"
+                                       placeholder="文字描述四"/>
+                            </div>
+                        </div>
+                        <div class="form-group" id="form-group-3-5">
+                            <div class="col-sm-2 control-label">文字描述五</div>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" id="text_3_5" name="text_3_5"
+                                       v-model="carouse3.text_3_5"
+                                       placeholder="文字描述五"/>
+                            </div>
+                        </div>
+                        <div class="form-group" id="form-group-3-6">
+                            <div class="col-sm-2 control-label">文字描述六</div>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" id="text_3_6" name="text_3_6"
+                                       v-model="carouse3.text_3_6"
+                                       placeholder="文字描述六"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-2 control-label"></div>
+                            <input type="button" name="submit" class="btn btn-primary" @click="Update('3')" value="确定"/>
+                            &nbsp;&nbsp;<input type="button" class="btn btn-warning" value="返回"/>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+
+            <!--第四张轮播图 -->
+            <div class="tab-pane fade" id="slideshow-Fourth">
+                <div v-show="!showList_Fourth" class="panel panel-default">
+                    <div class="panel-heading">{{title}}</div>
+                    <form class="form-horizontal" id="slideshow_4" name="id">
+                        <input type="hidden" name="slideshow_4_id">
+                        <div class="form-group">
+                            <div class="col-sm-2 control-label">商品图片</div>
+                            <div class="col-sm-10">
+                                <div class="form-group" id="picimg_4">
+                                    <input type="file" name="reportFile_4" id="reportFile_4" multiple
+                                           class="file-loading"/>
+                                    <input type="hidden" class="form-control" name="detail_picture"
+                                           id="detail_picture_4"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group" id="form-group-4-1">
+                            <div class="col-sm-2 control-label">文字描述一</div>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" name="text_4_1"
+                                       id="text_4_1" v-model="carouse4.text_4_1" placeholder="文字描述一"
+                                />
+                            </div>
+                        </div>
+                        <div class="form-group" id="form-group-4-2">
+                            <div class="col-sm-2 control-label">文字描述二</div>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" name="text_4_2"
+                                       v-model="carouse4.text_4_2" placeholder="文字描述二"/>
+                            </div>
+                        </div>
+                        <div class="form-group" id="form-group-4-3">
+                            <div class="col-sm-2 control-label">文字描述三</div>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" id="text_4_3" name="text_4_3"
+                                       v-model="carouse4.text_4_3"
+                                       placeholder="文字描述三"/>
+                            </div>
+                        </div>
+                        <div class="form-group" id="form-group-4-4">
+                            <div class="col-sm-2 control-label">文字描述四</div>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" id="text_4_4" name="text_4_4"
+                                       v-model="carouse4.text_4_4"
+                                       placeholder="文字描述四"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-2 control-label"></div>
+                            <input type="button" name="submit" class="btn btn-primary" @click="Update('4')" value="确定"/>
+                            &nbsp;&nbsp;<input type="button" class="btn btn-warning" value="返回"/>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="tab-pane fade" id="ejb">
+                <p>Enterprise Java Beans（EJB）是一个创建高度可扩展性和强大企业级应用程序的开发架构，部署在兼容应用程序服务器（比如 JBOSS、Web Logic 等）的 J2EE 上。
+                </p>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<div th:include="common/Head :: js"></div>
+
+<script src="../bootstrap/js/dept/js/vue.min.js"></script>
+
+<script src="../bootstrap/js/dept/js/bootstrapValidator.js"></script>
+
+<script src="../bootstrap/js/project/sys/shop/js/fileinput.min.js"></script>
+<script src="../bootstrap/js/project/sys/shop/js/zh.js"></script>
+<script src="../bootstrap/js/project/user/shop/indexManage/js/indexManage.js"></script>
+
+
+<script type="text/javascript" src="../bootstrap/dataTable/datatables.min.js"></script>
+<script src="../bootstrap/js/bootstrap.min.js"></script>
+<script>
+    $(document).ready(function () {
+
+        $("#shopMange").attr("class", "active");
+        $("#shopMange_ul").attr("class", "nav nav-second-level collapse in");
+
+        $("#shopPageMange").attr("class", "active");
+
+
+        $('.dataTables-example').DataTable({
+            pageLength: 10,
+            responsive: true,
+            //  dom: '<"html5buttons"B>f',
+            dom: '<"html5buttons"B>f<"top">rt<"bottom"lp>i<"clear">',
+            pagingType: "full_numbers",
+            destroy: true,
+            colReorder: true,
+            responsive: true,
+            language: {
+                "sLengthMenu": "每页显示 _MENU_条",
+                "paginate": {
+                    "last": "最后一页",
+                    "first": "第一页",
+                    "next": "下一页",
+                    "previous": "上一页",
+                    "show": "显示"
+                },
+                zeroRecords: "没有内容",//table tbody内容为空时，tbody的内容。
+                //下面三者构成了总体的左下角的内容。
+                info: "总共_PAGES_ 页，显示第_START_ 到第 _END_ ，筛选之后得到 _TOTAL_ 条，初始_MAX_ 条 ",//左下角的信息显示，大写的词为关键字。
+                infoEmpty: "0条记录",//筛选为空时左下角的显示。
+                infoFiltered: "",//筛选之后的左下角筛选提示，
+                buttons: {
+                    "colvis": "列可见性",
+                    "print": "打印",
+                    "copy": "复制数据",
+                },
+                editor: {
+                    "Update": "更新",
+                }
+
+            },
+            buttons: [
+                {extend: 'colvis'},
+                {
+                    extend: 'print',
+                    customize: function (win) {
+                        $(win.document.body).addClass('white-bg');
+                        $(win.document.body).css('font-size', '10px');
+
+                        $(win.document.body).find('table')
+                            .addClass('compact')
+                            .css('font-size', 'inherit');
+                    }
+                },
+                {extend: 'copy'},
+                {extend: 'csv'},
+                {extend: 'excel', title: 'ExampleFile'},
+                {extend: 'pdf', title: 'ExampleFile'}
+            ],
+            ajax:
+                {
+                    url: "/shop/list",
+                    dataSrc:
+                        function (json) {
+                            return json;
+                        }
+                    ,
+                    dataType: 'json',
+                    type:
+                        "post",
+                }
+            ,
+            columns: [
+                {data: null, orderable: false},
+                {data: "id"},
+                {data: "name"},
+                {data: "pirce"},
+                {data: "num"},
+                {data: "saveFileName", width: "15%"},
+                {data: "register"},
+                {data: "isNewProductOrderNum"}
+            ],
+            aoColumnDefs:
+                [
+                    {
+                        "render": function (data, type) {
+                            return "<div align='center'><input type='radio'   name='radio' value='" + data.id + "' ></div>";
+                        },
+                        "aTargets": 0 //第一列
+                    },
+                    {
+                        "render": function (data, type, full) {
+
+                            if (data != undefined && data != 'undefined' && data.length > 0) {
+
+                                return '<img src="' + full.pageaddr + "/" + data + '"  onclick ="detail(' + "'" + full.id + "'" + ')" width="40" height="40">';
+                            } else {
+                                return '<a class="btn btn-sm btn-warning" ><i class="fa fa-file-photo-o"></i>&nbsp;暂无图片</a>';
+
+                            }
+                        },
+                        "aTargets": 5 //第5列
+                    },
+                    {
+                        "render": function (data, type) {
+                            if (data != undefined && data != 'undefined') {
+
+                                return new Date(data).Format("yyyy-MM-dd hh:mm:ss");
+                            } else {
+                                return '';
+                            }
+                        },
+                        "aTargets": 6 //第一列
+                    }
+                ],
+            columnDefs:
+                [
+                    {orderable: false, targets: 0},
+                    {width: "15%", orderable: false, targets: 5}
+                ],
+            order:
+                [1, 'asc']
+        })
+        ;
+    })
+    //对Date 类进行扩展
+    Date.prototype.Format = function (fmt) {
+        var o = {
+            "M+": this.getMonth() + 1, //月份
+            "d+": this.getDate(), //日
+            "h+": this.getHours(), //小时
+            "m+": this.getMinutes(), //分
+            "s+": this.getSeconds(), //秒
+            "q+": Math.floor((this.getMonth() + 3) / 3), //季度
+            "S": this.getMilliseconds() //毫秒
+        };
+        if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+        for (var k in o)
+            if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+        return fmt;
+    }
+
+    function detail(shopId) {
+        top.layer.open({
+            type: 2,
+            title: '照片详情查看',
+            shadeClose: true,
+            shade: 0.1,
+            scrollbar: true,
+            area: ['80%', '80%'],
+            content: '/shop/pictureCarousel?shopId=' + shopId
+        })
+
+    $(function () {
+        var $thisA = $('a[href="/shop/shopPageMange"]');
+        $thisA.parent().attr("class", "active");
+        $thisA.parent().parent().attr("class", "nav nav-second-level collapse in");
+    });
+</script>
+</body>
+</html>

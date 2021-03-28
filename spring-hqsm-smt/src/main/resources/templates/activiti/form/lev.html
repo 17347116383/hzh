@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>申请信息</title>
+    <div th:include="common/Head :: headCss"></div>
+</head>
+
+<body style="background: white">
+
+    <!--todo 流程表单头部， 还未完成-->
+    <div th:include="activiti/common/form :: formHeadView"></div>
+
+    <div class="container" style="padding-left:0!important;padding-right:0!important;">
+        <!--下面是业务表单-->
+        <form name="businessForm" id="businessForm">
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <tbody>
+                    <tr>
+                        <td>申请人</td>
+                        <td>管理管理员</td>
+                        <td>请假类型</td>
+                        <td>
+                            <select class="form-control" name="leaveType">
+                                <option>请选择</option>
+                                <option value="1" th:selected="${taskData['leaveType']=='1'}">年假</option>
+                                <option value="2" th:selected="${taskData['leaveType']=='2'}">事假</option>
+                                <option value="3" th:selected="${taskData['leaveType']=='3'}">调休</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>开始时间</td>
+                        <td><input type="text" class="form-control" oninvalid="setCustomValidity('开始时间不允许为空')" required id="startTime" name="startTime" th:value="${taskData['startTime']}"/></td>
+
+                        <td>结束时间</td>
+                        <td><input type="text" class="form-control" id="endTime" name="endTime" th:value="${taskData['endTime']}"/></td>
+                    </tr>
+                    <tr>
+                        <td>请假原因</td>
+                        <td colspan="4"><textarea class="form-control" name="reason" th:text="${taskData['reason']}"></textarea></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!--隐藏字段，用于路由条件变量判断-->
+            <div id="hideDiv">
+                <input type="hidden" name="userId" value="">
+                <input type="hidden" name="type" value="2">
+            </div>
+            <!--用于表单必填验证-->
+            <div th:include="activiti/common/form :: busBtn"></div>
+
+        </form>
+    </div>
+
+    <!--提交任务模态框-->
+    <div th:include="activiti/common/form :: submitTaskModal"></div>
+
+    <div th:include="common/Head :: mainJs"></div>
+    <script>
+        layui.use('laydate', function(){
+            var laydate = layui.laydate;
+
+            laydate.render({
+                elem: '#startTime'
+            });
+            laydate.render({
+                elem: '#endTime'
+            });
+        });
+
+        /**
+         * 重写表单提交前事件
+         * @returns {boolean}
+         */
+        function preSubmit() {
+            console.log('重写表单提交前事件...');
+            // 此处编写任务提交前的业务逻辑（如果需要，不需要就不用重写此方法了）
+            // alert('不允许提交');
+            // return false;   // 返回false可阻止继续表单提交
+        }
+
+        $(function () {
+
+        });
+    </script>
+</body>
+</html>

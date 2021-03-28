@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div id="app">
+    <div :class="classes">
+
+    </div>
+</div>
+
+
+<script>
+    var app=new Vue({
+        el:'#app',
+        data:{
+            isActive:true,
+            error:null
+        },
+        computed:{
+            classes:function () {
+                return{
+                    active:this.isActive&&!this.error,
+                    'text fail':this.error&&this.error.type=='fail'
+                }
+            }
+        }
+    })
+    app.error='1'
+</script>
+<div th:include="common/Head :: js"></div>
+<script th:src="@{/bootstrap/js/dept/js/vue.min.js}"></script>
+</body>
+
+</html>

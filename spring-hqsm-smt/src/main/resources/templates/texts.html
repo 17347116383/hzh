@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta>
+    <meta charset="UTF-8"></meta>
+    <title>Title</title>
+</head>
+<body>
+ <h2 th:text="${msg}"></h2>
+  <!--  <h1>login</h1>
+   <form method="post" action="/shrio/login">
+      用户名称： <input type="text" name="name"><br/>
+      用户密码  <input type="password"  name="password"><br/>
+      <input type="submit" value="登陆">
+   </form> -->
+   
+ <!--   <h1 th:text="#{name}"></h1> -->
+<div shiro:hasPermission="user:add">
+<a href="/shiro/add">11111111添加用户信息</a>
+</div>
+<!--<div shiro:hasPermission="user:update">-->
+<a href="/shrio/update">修改用户信息</a>
+<a href="/">登录</a>
+
+<!--</div>-->
+
+
+
+
+</body>
+</html>
